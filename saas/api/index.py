@@ -1,23 +1,18 @@
 from fastapi import FastAPI
 from fastapi.responses import PlainTextResponse
-import google.genai as genai
+from google import genai
 import os
 
 app = FastAPI()
 
+# Create Gemini client (auto reads GEMINI_API_KEY from environment)
+client = genai.Client()
+
 @app.get("/api", response_class=PlainTextResponse)
 def idea():
-    api_key = os.getenv("GEMINI_API_KEY")
-    if not api_key:
-        return "ERROR: GEMINI_API_KEY missing"
-
-    client = genai.Client(api_key=api_key)
-
-    prompt = "Come up with a new business idea for AI Agents."
-
-    response = client.models.generate(
-        model="gemini-2.0-flash",
-        prompt=prompt
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents="Come up with a new business idea for AI Agents",
     )
 
     return response.text
