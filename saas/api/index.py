@@ -1,18 +1,23 @@
-from fastapi import FastAPI  # type: ignore
-from fastapi.responses import PlainTextResponse  # type: ignore
-import google.generativeai as genai  # type: ignore
-import os  # type: ignore
+from fastapi import FastAPI
+from fastapi.responses import PlainTextResponse
+import google.genai as genai
+import os
 
 app = FastAPI()
 
-# Create a Gemini client (free model = "gemini-1.5-flash")
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-
 @app.get("/api", response_class=PlainTextResponse)
 def idea():
-    prompt = "Come up with a new business idea for AI Agents"
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        return "ERROR: GEMINI_API_KEY missing"
 
-    model = genai.GenerativeModel("gemini-1.5-flash")  # free model
-    response = model.generate_content(prompt)
+    client = genai.Client(api_key=api_key)
+
+    prompt = "Come up with a new business idea for AI Agents."
+
+    response = client.models.generate(
+        model="gemini-2.0-flash",
+        prompt=prompt
+    )
 
     return response.text
