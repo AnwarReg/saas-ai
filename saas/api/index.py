@@ -1,25 +1,27 @@
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from google import genai
+import os
 
 app = FastAPI()
 
-client = genai.Client()  # auto reads GEMINI_API_KEY
-
+# Create Gemini client
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 @app.get("/api")
 def idea():
-    stream = client.models.generate_content(
-        model="gemini-1.5-flash",       # FAST free model
-        contents="Come up with a new business idea for AI Agents",
-        stream=True                     # STREAM ENABLED
-    )
+    prompt = "Come up with a new business idea for AI Agents"
 
+    # Gemini streaming generator
     def event_stream():
+        stream = client.models.generate_content_stream(
+            model="gemini-1.5-flash",
+            contents=prompt
+        )
+        
         for chunk in stream:
-            text = chunk.text or ""
-            if text:
-                for line in text.split("\n"):
+            if chunk.text:
+                for line in chunk.text.split("\n"):
                     yield f"data: {line}\n"
                 yield "\n"
 
