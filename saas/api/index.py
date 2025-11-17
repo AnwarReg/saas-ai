@@ -5,17 +5,15 @@ import os
 
 app = FastAPI()
 
-# Create Gemini client
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 @app.get("/api")
 def idea():
     prompt = "Come up with a new business idea for AI Agents"
 
-    # Gemini streaming generator
     def event_stream():
         stream = client.models.generate_content_stream(
-            model="gemini-1.5-flash",
+            model="gemini-2.0-flash-exp",   # <-- FIXED MODEL
             contents=prompt
         )
         
