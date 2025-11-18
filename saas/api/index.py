@@ -1,25 +1,21 @@
-from fastapi import FastAPI
-from fastapi.responses import StreamingResponse
-from google import genai
-import os
+from fastapi import FastAPI  # type: ignore
+from fastapi.responses import StreamingResponse  # type: ignore
+from openai import OpenAI  # type: ignore
 
 app = FastAPI()
 
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
-
 @app.get("/api")
 def idea():
-    prompt = "Come up with a new business idea for AI Agents"
+    client = OpenAI()
+    prompt = [{"role": "user", "content": "Come up with a new business idea for AI Agents"}]
+    stream = client.chat.completions.create(model="gpt-5-nano", messages=prompt, stream=True)
 
     def event_stream():
-        stream = client.models.generate_content_stream(
-            model="gemini-2.0-flash-exp",   # <-- FIXED MODEL
-            contents=prompt
-        )
-        
         for chunk in stream:
-            if chunk.text:
-                for line in chunk.text.split("\n"):
+            text = chunk.choices[0].delta.content
+            if text:
+                lines = text.split("\n")
+                for line in lines:
                     yield f"data: {line}\n"
                 yield "\n"
 
