@@ -90,4 +90,4 @@ if static_path.exists():
         return FileResponse(static_path / "index.html")
     
     # Mount static files for all other routes
-    app.mount("/", StaticFiles(directory="static", html=True), name="static")
+    app.mount("/", StaticFiles(directory="static", html=True), name="static") 
