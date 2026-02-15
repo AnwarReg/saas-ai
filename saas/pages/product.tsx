@@ -36,7 +36,7 @@ function ConsultationForm() {
         const controller = new AbortController();
         let buffer = '';
 
-        await fetchEventSource('/api', {
+        await fetchEventSource('/api/consultation', {
             signal: controller.signal,
             method: 'POST',
             headers: {
@@ -52,8 +52,8 @@ function ConsultationForm() {
                 buffer += ev.data;
                 setOutput(buffer);
             },
-            onclose() { 
-                setLoading(false); 
+            onclose() {
+                setLoading(false);
             },
             onerror(err) {
                 console.error('SSE error:', err);
@@ -115,8 +115,8 @@ function ConsultationForm() {
                     />
                 </div>
 
-                <button 
-                    type="submit" 
+                <button
+                    type="submit"
                     disabled={loading}
                     className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
                 >
